@@ -1,0 +1,28 @@
+import requests
+from bs4 import BeautifulSoup
+from datetime import datetime
+
+r = requests.get('http://scp-zh-tr.wikidot.com/system:recent-changes')
+
+
+def find_date(x):
+    items_list = soup.select(x)
+    for item in items_list:
+        ts = int(item.select('span')[0].get('class')[1][5:])
+        time = datetime.fromtimestamp(ts)
+        return int(str(time.strftime("%Y%m%d")) + str(time.strftime("%H%M%S")))
+
+
+def find_new():
+    date = {"origin": find_date('#wiki-tab-0-2'),
+            "translate": find_date('#wiki-tab-0-3'),
+            "art": find_date('#wiki-tab-0-4')}
+    newest = max(date["origin"], date["translate"], date["art"])
+    print(newest)
+
+
+if r.status_code == 200:
+    soup = BeautifulSoup(r.text, 'html.parser')
+
+else:
+    print(f'請求失敗：{r.status_code}')
