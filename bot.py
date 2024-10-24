@@ -74,6 +74,7 @@ def animate(x):
 @client.event
 # 當機器人完成啟動時
 async def on_ready():
+    slash = await client.tree.sync()
     print('目前登入身份：', client.user)
     everyday.start()
 
