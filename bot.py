@@ -4,7 +4,9 @@ import random
 import discord
 import requests
 from bs4 import BeautifulSoup
+from discord import app_commands
 from discord.ext import tasks, commands
+from discord.app_commands import Choice
 
 # client 是我們與 Discord 連結的橋樑，intents 是我們要求的權限
 intents = discord.Intents.all()
@@ -14,7 +16,32 @@ tz = datetime.timezone(datetime.timedelta(hours=8))
 everyday_time = datetime.time(hour=12, minute=00, tzinfo=tz)
 URL = "https://play-lh.googleusercontent.com/FNShJS-ArMjI28I4-CHlgWaA9HqKnj4DrW8-lXF2B_FH3U0KxP_djBnMuyK7Hxymxrq8"  # 動畫瘋
 
-
+def poke_deck(x):
+    response = requests.get(f"https://pokecabook.com/archives/{x}")
+    soup = BeautifulSoup(response.text, "html.parser")
+    pokemon = soup.find("h1").text
+    pokemon = pokemon.replace("環境デッキレシピまとめ", "")
+    results = soup.find_all("img", {"width": "800", "height": "400"}, limit=30)
+    titles = soup.find_all("figcaption", {"class": "wp-element-caption"}, limit=30)
+    image_links = []
+    text = []
+    info =""
+    for result in results:
+        src = result.get("src")
+        if len(image_links)==10:
+            break
+        if "http" in src:
+            image_links.append(src)
+    for title in titles:
+        if len(text)==10:
+            break
+        else:
+           text.append(title.text)
+    for i in range(0,10):
+        info += f"{image_links[i]}\n{text[i]}\n-----\n"
+    print(info)
+    return info
+    
 def animate(x):
     info = ""
     headers = {
@@ -66,6 +93,21 @@ async def week(interaction: discord.Interaction):
     embed.set_thumbnail(url=URL)
     await interaction.response.send_message(embed=embed)
 
+@client.tree.command(name = "ptcg", description = "查詢上位牌組")
+@app_commands.describe(pokemon_name = "輸入寶可夢名稱")
+@app_commands.choices(
+        pokemon_name = [
+            Choice(name="雄偉牙",value = 2003),
+            Choice(name = "皮卡丘",value = 155139),
+            Choice(name = "忍蛙",value = 111205),
+            Choice(name = "草貓",value = 40222),
+            Choice(name = "惡噴",value = 5717),
+            Choice(name = "電蜘蛛",value = 137410),
+            Choice(name = "密勒頓",value = 2278),
+            Choice(name = "鐵荊棘",value = 111240)
+        ])
+async def ptcg( interaction: discord.Interaction, pokemon_name: Choice[int]):
+        await interaction.response.send_message(poke_deck(pokemon_name.value))
 
 def random_url():
     x = random.randrange(0, 1)
@@ -79,7 +121,7 @@ def random_url():
 @tasks.loop(time=everyday_time)
 async def everyday():
     try:
-        channel_id = 1212953165188698173
+        channel_id = 頻道ID
         channel = client.get_channel(channel_id)
         # 設定發送訊息的頻道ID
         embed = discord.Embed(title="隨機作品", url=random_url(), description="隨機作品", color=0x00ff00)
