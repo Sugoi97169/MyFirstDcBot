@@ -25,6 +25,7 @@ def poke_deck_name(x):
     pokemon = poke_deck_response(x).find("h1").text
     pokemon = pokemon.replace("環境デッキレシピまとめ", "")
     return pokemon
+
 def poke_deck(x):
     soup = poke_deck_response(x)
     results = soup.find_all("img", {"width": "800", "height": "400"}, limit=30)
@@ -113,7 +114,8 @@ async def week(interaction: discord.Interaction):
         Choice(name="惡噴", value=5717),
         Choice(name="電蜘蛛", value=137410),
         Choice(name="密勒頓", value=2278),
-        Choice(name="鐵荊棘", value=111240)
+        Choice(name="鐵荊棘", value=111240),
+        Choice(name="多龍",value=122503)
     ])
 async def ptcg(interaction: discord.Interaction, pokemon_name: Choice[int]):
     embed = discord.Embed(title=f"{poke_deck_name(pokemon_name.name)}", url="", description=poke_deck(pokemon_name.value), color=0x00ff00)
@@ -134,7 +136,7 @@ def random_url():
 @tasks.loop(time=everyday_time)
 async def everyday():
     try:
-        channel_id = 頻道ID
+        channel_id = 1212953165188698173
         channel = client.get_channel(channel_id)
         # 設定發送訊息的頻道ID
         embed = discord.Embed(title="隨機作品", url=random_url(), description="隨機作品", color=0x00ff00)
@@ -147,4 +149,4 @@ async def everyday():
 
 
 if __name__ == "__main__":
-    client.run('金鑰')
+    client.run()
