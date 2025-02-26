@@ -1,5 +1,6 @@
 import datetime
 import os
+from dotenv import load_dotenv
 import random
 
 import discord
@@ -171,4 +172,5 @@ async def everyday():
 
 
 if __name__ == "__main__":
-    client.run(os.getenv('token'))
+    load_dotenv()
+    client.run(os.getenv("token"))
