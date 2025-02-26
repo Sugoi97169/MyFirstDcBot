@@ -3,6 +3,7 @@ import random
 
 import discord
 import requests
+from ua_scrpaer import get_tier_dict
 from bs4 import BeautifulSoup
 from discord import app_commands
 from discord.ext import tasks, commands
@@ -16,6 +17,7 @@ tz = datetime.timezone(datetime.timedelta(hours=8))
 everyday_time = datetime.time(hour=12, minute=00, tzinfo=tz)
 URL = "https://play-lh.googleusercontent.com/FNShJS-ArMjI28I4-CHlgWaA9HqKnj4DrW8-lXF2B_FH3U0KxP_djBnMuyK7Hxymxrq8"  # 動畫瘋
 ptcg_URL = "https://asia.pokemon-card.com/hk/archive/common/assets_c/2020/10/CH-TCG_logo-thumb-650xauto-15381.png" # 寶可夢牌組
+ua_url="https://torecards.com/wp-content/uploads/2023/08/Tierアートボード-1-600x315.png"
 
 def poke_deck_response(x):
     response = requests.get(f"https://pokecabook.com/archives/{x}")
@@ -45,7 +47,7 @@ def poke_deck(x):
         else:
             text.append(title.text)
     for i in range(0, 10):
-        info += f"{image_links[i]}\n{text[i]}\n-----\n"
+        info += (f"{image_links[i]}\n{text[i]}\n-----\n")
     print(info)
     return info
 
@@ -123,6 +125,24 @@ async def ptcg(interaction: discord.Interaction, pokemon_name: Choice[int]):
     embed.set_thumbnail(url=ptcg_URL)
     await interaction.response.send_message(embed=embed)
 
+@client.tree.command(name="ua", description="看UAt表")
+@app_commands.describe(union_arena="T幾")
+@app_commands.choices(
+    union_arena=[
+        Choice(name="T1", value=0),
+        Choice(name="T1.5", value=1),
+        Choice(name="T2", value=2),
+        Choice(name="T2.5", value=3),
+        Choice(name="T3", value=4),
+        Choice(name="T4", value=5),
+        Choice(name="T5", value=6)
+    ])
+async def ua(interaction: discord.Interaction, union_arena: Choice[int]):
+    embed = discord.Embed(title=f"{union_arena.name}", url="https://torecards.com/unionarenatier/", description=get_tier_dict(union_arena.value), color=0x808080)
+    embed.set_author(name="狗蟻寫的UAt表")
+    embed.set_thumbnail(url=ua_url)
+    await interaction.response.send_message(embed=embed)
+
 
 def random_url():
     x = random.randrange(0, 1)
@@ -147,6 +167,5 @@ async def everyday():
     except Exception as e:
         print(e)
 
-
 if __name__ == "__main__":
-    client.run()
+    client.run(os.getenv('token'))
