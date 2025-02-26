@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
-
+import discord
 
 def get_tier_dict(ua_num):
     response = requests.get("https://torecards.com/unionarenatier/")

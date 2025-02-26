@@ -1,4 +1,5 @@
 import datetime
+import os
 import random
 
 import discord
@@ -23,6 +24,7 @@ def poke_deck_response(x):
     response = requests.get(f"https://pokecabook.com/archives/{x}")
     soup = BeautifulSoup(response.text, "html.parser")
     return soup
+
 def poke_deck_name(x):
     pokemon = poke_deck_response(x).find("h1").text
     pokemon = pokemon.replace("環境デッキレシピまとめ", "")
@@ -34,7 +36,7 @@ def poke_deck(x):
     titles = soup.find_all("figcaption", {"class": "wp-element-caption"}, limit=30)
     image_links = []
     text = []
-    info = ""
+    embed_list = []
     for result in results:
         src = result.get("src")
         if len(image_links) == 10:
@@ -46,10 +48,11 @@ def poke_deck(x):
             break
         else:
             text.append(title.text)
-    for i in range(0, 10):
-        info += (f"{image_links[i]}\n{text[i]}\n-----\n")
-    print(info)
-    return info
+    for i in range(0,10):
+        embed = discord.Embed(title=text[i], color=0x00ff00)
+        embed.set_image(url=image_links[i])
+        embed_list.append(embed)
+    return embed_list
 
 
 def animate(x):
@@ -120,10 +123,7 @@ async def week(interaction: discord.Interaction):
         Choice(name="多龍",value=122503)
     ])
 async def ptcg(interaction: discord.Interaction, pokemon_name: Choice[int]):
-    embed = discord.Embed(title=f"{poke_deck_name(pokemon_name.name)}", url="", description=poke_deck(pokemon_name.value), color=0x00ff00)
-    embed.set_author(name="狗蟻寫的寶可夢牌組查詢")
-    embed.set_thumbnail(url=ptcg_URL)
-    await interaction.response.send_message(embed=embed)
+    await interaction.response.send_message(embeds=poke_deck(pokemon_name.value))
 
 @client.tree.command(name="ua", description="看UAt表")
 @app_commands.describe(union_arena="T幾")
@@ -142,6 +142,7 @@ async def ua(interaction: discord.Interaction, union_arena: Choice[int]):
     embed.set_author(name="狗蟻寫的UAt表")
     embed.set_thumbnail(url=ua_url)
     await interaction.response.send_message(embed=embed)
+
 
 
 def random_url():
@@ -166,6 +167,8 @@ async def everyday():
         await channel.send(embed=embed)
     except Exception as e:
         print(e)
+
+
 
 if __name__ == "__main__":
     client.run(os.getenv('token'))
