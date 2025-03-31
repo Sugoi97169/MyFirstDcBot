@@ -1,16 +1,16 @@
 import datetime
-import os
-from dotenv import load_dotenv
 import random
 
 import discord
 import requests
+
+
 from ua_scrpaer import get_tier_dict
 from bs4 import BeautifulSoup
 from discord import app_commands
 from discord.ext import tasks, commands
 from discord.app_commands import Choice
-
+from get_ua_card import search_card
 # client 是我們與 Discord 連結的橋樑，intents 是我們要求的權限
 intents = discord.Intents.all()
 intents.message_content = True
@@ -108,6 +108,10 @@ async def week(interaction: discord.Interaction):
     embed.set_thumbnail(url=URL)
     await interaction.response.send_message(embed=embed)
 
+@client.tree.command(name="search_ua_card", description="查詢指定UA卡片")
+@client.tree.describe(card_number = "輸入卡片編號")
+async def search_ua_card(card_number:str):
+    print(search_card(card_number))
 
 @client.tree.command(name="ptcg", description="查詢上位牌組")
 @app_commands.describe(pokemon_name="輸入寶可夢名稱")
@@ -126,24 +130,24 @@ async def week(interaction: discord.Interaction):
 async def ptcg(interaction: discord.Interaction, pokemon_name: Choice[int]):
     await interaction.response.send_message(embeds=poke_deck(pokemon_name.value))
 
-@client.tree.command(name="ua", description="看UAt表")
-@app_commands.describe(union_arena="T幾")
-@app_commands.choices(
-    union_arena=[
-        Choice(name="T1", value=0),
-        Choice(name="T1.5", value=1),
-        Choice(name="T2", value=2),
-        Choice(name="T2.5", value=3),
-        Choice(name="T3", value=4),
-        Choice(name="T4", value=5),
-        Choice(name="T5", value=6)
-    ])
-async def ua(interaction: discord.Interaction, union_arena: Choice[int]):
-    embed = discord.Embed(title=f"{union_arena.name}", url="https://torecards.com/unionarenatier/", description=get_tier_dict(union_arena.value), color=0x808080)
-    embed.set_author(name="狗蟻寫的UAt表")
-    embed.set_thumbnail(url=ua_url)
-    await interaction.response.send_message(embed=embed)
-
+# @client.tree.command(name="ua", description="看UAt表")
+# @app_commands.describe(union_arena="T幾")
+# @app_commands.choices(
+#     union_arena=[
+#         Choice(name="T1", value=0),
+#         Choice(name="T1.5", value=1),
+#         Choice(name="T2", value=2),
+#         Choice(name="T2.5", value=3),
+#         Choice(name="T3", value=4),
+#         Choice(name="T4", value=5),
+#         Choice(name="T5", value=6)
+#     ])
+# async def ua(interaction: discord.Interaction, union_arena: Choice[int]):
+#     # embed = discord.Embed(title=f"{union_arena.name}", url="https://torecards.com/unionarenatier/", description=get_tier_dict(union_arena.value), color=0x808080)
+#     # embed.set_author(name="狗蟻寫的UAt表")
+#     # embed.set_thumbnail(url=ua_url)
+#     # await interaction.response.send_message(embed=embed)
+#     await interaction.response.send_message(embeds=poke_deck(pokemon_name.value))
 
 
 def random_url():
@@ -170,7 +174,5 @@ async def everyday():
         print(e)
 
 
-
 if __name__ == "__main__":
-    load_dotenv()
-    client.run(os.getenv("token"))
+    client.run('token')
