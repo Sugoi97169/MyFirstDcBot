@@ -130,24 +130,24 @@ async def search_ua_card(interaction: discord.Interaction,card_number:str):
 async def ptcg(interaction: discord.Interaction, pokemon_name: Choice[int]):
     await interaction.response.send_message(embeds=poke_deck(pokemon_name.value))
 
-# @client.tree.command(name="ua", description="看UAt表")
-# @app_commands.describe(union_arena="T幾")
-# @app_commands.choices(
-#     union_arena=[
-#         Choice(name="T1", value=0),
-#         Choice(name="T1.5", value=1),
-#         Choice(name="T2", value=2),
-#         Choice(name="T2.5", value=3),
-#         Choice(name="T3", value=4),
-#         Choice(name="T4", value=5),
-#         Choice(name="T5", value=6)
-#     ])
-# async def ua(interaction: discord.Interaction, union_arena: Choice[int]):
-#     embed = discord.Embed(title=f"{union_arena.name}", url="https://torecards.com/unionarenatier/", description=get_tier_dict(union_arena.value), color=0x808080)
-#     embed.set_author(name="狗蟻寫的UAt表")
-#     embed.set_thumbnail(url=ua_url)
-#     await interaction.response.send_message(embed=embed)
-#     await interaction.response.send_message(embeds=poke_deck(pokemon_name.value))
+@client.tree.command(name="ua", description="看UAt表")
+@app_commands.describe(union_arena="T幾")
+@app_commands.choices(
+    union_arena=[
+        Choice(name="T1", value=0),
+        Choice(name="T1.5", value=1),
+        Choice(name="T2", value=2),
+        Choice(name="T2.5", value=3),
+        Choice(name="T3", value=4),
+        Choice(name="T4", value=5),
+        Choice(name="T5", value=6)
+    ])
+async def ua(interaction: discord.Interaction, union_arena: Choice[int]):
+    embed = discord.Embed(title=f"{union_arena.name}", url="https://torecards.com/unionarenatier/", description=get_tier_dict(union_arena.value), color=0x808080)
+    embed.set_author(name="狗蟻寫的UAt表")
+    embed.set_thumbnail(url=ua_url)
+    await interaction.response.send_message(embed=embed)
+    await interaction.response.send_message(embeds=get_tier_dict(union_arena))
 
 
 def random_url():
