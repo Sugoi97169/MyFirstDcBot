@@ -1,3 +1,4 @@
+import discord
 from bs4 import BeautifulSoup
 import requests
 from urllib.parse import urljoin
@@ -41,12 +42,9 @@ def search_card(card_number):
     if soup.find("span", {"class": "raidBorder"})!=None:
         effect_txt += "突襲"+soup.find("span", {"class": "raidBorder"}).text
 
+    embed = discord.Embed(title="UA查詢",description=effect_txt,color=0x00ff00)
+    embed.set_image(url=card_img_link)
+    return embed
 
 
-    print(card_number)
-    print(card_img_link)
-    print(effect_txt)
-
-card_number = input()
-search_card(card_number)
 
