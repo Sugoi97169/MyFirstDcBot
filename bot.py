@@ -1,9 +1,9 @@
 import datetime
+import os
 import random
 
 import discord
 import requests
-
 
 from ua_scrpaer import get_tier_dict
 from bs4 import BeautifulSoup
@@ -109,9 +109,9 @@ async def week(interaction: discord.Interaction):
     await interaction.response.send_message(embed=embed)
 
 @client.tree.command(name="search_ua_card", description="查詢指定UA卡片")
-@client.tree.describe(card_number = "輸入卡片編號")
-async def search_ua_card(card_number:str):
-    print(search_card(card_number))
+@app_commands.describe(card_number = "輸入卡片編號")
+async def search_ua_card(interaction: discord.Interaction,card_number:str):
+    await interaction.response.send_message(embed=search_card(card_number))
 
 @client.tree.command(name="ptcg", description="查詢上位牌組")
 @app_commands.describe(pokemon_name="輸入寶可夢名稱")
@@ -143,10 +143,10 @@ async def ptcg(interaction: discord.Interaction, pokemon_name: Choice[int]):
 #         Choice(name="T5", value=6)
 #     ])
 # async def ua(interaction: discord.Interaction, union_arena: Choice[int]):
-#     # embed = discord.Embed(title=f"{union_arena.name}", url="https://torecards.com/unionarenatier/", description=get_tier_dict(union_arena.value), color=0x808080)
-#     # embed.set_author(name="狗蟻寫的UAt表")
-#     # embed.set_thumbnail(url=ua_url)
-#     # await interaction.response.send_message(embed=embed)
+#     embed = discord.Embed(title=f"{union_arena.name}", url="https://torecards.com/unionarenatier/", description=get_tier_dict(union_arena.value), color=0x808080)
+#     embed.set_author(name="狗蟻寫的UAt表")
+#     embed.set_thumbnail(url=ua_url)
+#     await interaction.response.send_message(embed=embed)
 #     await interaction.response.send_message(embeds=poke_deck(pokemon_name.value))
 
 
